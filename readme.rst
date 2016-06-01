@@ -9,18 +9,18 @@ The modification is located on "django_mailbox/models.py", and a new file is add
 Tutorial - *Read before using this package*
 ===========================================
 
-In this page we can see a fast tutorial with how to get the client_secrets.json and
+- In this page we can see a fast tutorial with how to get the client_secrets.json and
 select the gmail application.
 https://developers.google.com/gmail/api/quickstart/python#step_1_turn_on_the_api_name
 
-Now, you have to replace the variable CLIENTSECRETS_LOCATION (after this text you can find it) value with the location of your client_secrets.json file.
-Then, replace APPLICATION_NAME (after this text you can find it) with the name of the application we are using in gmail projects.
+- Now, you have to replace the variable CLIENTSECRETS_LOCATION (after this text you can find it) value with the location of your client_secrets.json file.
+- Then, replace APPLICATION_NAME (after this text you can find it) with the name of the application we are using in gmail projects.
 
-Now, before using our modified django-mailbox, we need to execute first the function 'create_credentials()' of this file, we follow the instructions and we will have created the credentials.
+- Now, before using our modified django-mailbox, we need to execute first the function 'create_credentials()' of this file, we follow the instructions and we will have created the credentials.
 
-After it we can use django-mailbox using the API Gmail  on our django project.
+- After it we can use django-mailbox using the API Gmail  on our django project.
 
-You can install it with 'python setup.py install'.
+- You can install it with 'python setup.py install'.
 
 Django Mailbox Documentation
 ============================
