@@ -1,4 +1,4 @@
-Django-Mailbox - API Gmail extension
+Django-Mailbox - Gmail API extension
 ====================================
 
 This Django-Mailbox extension is focused on using the API of gmail for getting new emails we receive in our mailbox.
@@ -16,7 +16,7 @@ Tutorial - *Read before using this package*
 
 - Now, before using our modified django-mailbox, we need to execute first the function 'create_credentials()' of "django_mailbox/server_side_gmail.py" file, we follow the instructions and then, the credentials will be created.
 
-- Now, all its prepared, and we can use django-mailbox using the API Gmail  on our django project.
+- Now, all its prepared, and we can use django-mailbox using the Gmail API on our django project.
   The package can be installed with 'python setup.py install' command.
 
 Django Mailbox Documentation
