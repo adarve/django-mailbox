@@ -1,29 +1,24 @@
-.. image:: https://travis-ci.org/coddingtonbear/django-mailbox.png?branch=master
-   :target: https://travis-ci.org/coddingtonbear/django-mailbox
+# Django-Mailbox - API Gmail extension
 
-.. image:: https://badge.fury.io/py/django-mailbox.png
-    :target: http://badge.fury.io/py/django-mailbox
+This Django-Mailbox extension is focused on using the API of gmail for getting new emails we receive in our mailbox.
 
-.. image:: https://pypip.in/d/django-mailbox/badge.png
-    :target: https://pypi.python.org/pypi/django-mailbox
+The modification is located on "django_mailbox/models.py", and a new file is added in the same directory, "server_side_gmail.py" which contains the functions to provide the retrieve, creation and store of the right credentials to connect with the Gmail API.
 
 
-Easily ingest messages from POP3, IMAP, or local mailboxes into your Django application.
+# Tutorial - *Read before using this package*
 
-This app allows you to either ingest e-mail content from common e-mail services (as long as the service provides POP3 or IMAP support),
-or directly recieve e-mail messages from ``stdin`` (for locally processing messages from Postfix or Exim4).
+In this page we can see a fast tutorial with how to get the client_secrets.json and
+select the gmail application.
+https://developers.google.com/gmail/api/quickstart/python#step_1_turn_on_the_api_name
 
-These ingested messages will be stored in the database in Django models and you can process their content at will,
-or -- if you're in a hurry -- by using a signal receiver.
+Now, you have to replace the variable CLIENTSECRETS_LOCATION (after this text you can find it) value with the location of your client_secrets.json file.
+Then, replace APPLICATION_NAME (after this text you can find it) with the name of the application we are using in gmail projects.
+
+Now, before using our modified django-mailbox, we need to execute first the function 'create_credentials()' of this file, we follow the instructions and we will have created the credentials.
+
+After it we can use django-mailbox using the API Gmail  on our django project.
+
+You can install it with 'python setup.py install'.
 
 - Documentation for django-mailbox is available on
   `ReadTheDocs <http://django-mailbox.readthedocs.org/>`_.
-- Please post issues on
-  `Github <http://github.com/coddingtonbear/django-mailbox/issues>`_.
-- Test status available on
-  `Travis-CI <https://travis-ci.org/coddingtonbear/django-mailbox>`_.
-
-
-.. image:: https://badges.gitter.im/Join%20Chat.svg
-   :alt: Join the chat at https://gitter.im/coddingtonbear/django-mailbox
-   :target: https://gitter.im/coddingtonbear/django-mailbox?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
