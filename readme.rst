@@ -9,9 +9,8 @@ The modification is located on "django_mailbox/models.py", and a new file is add
 Tutorial - *Read before using this package*
 ===========================================
 
-- In this page we can see a fast tutorial with how to get the client_secrets.json and
-select the gmail application.
-https://developers.google.com/gmail/api/quickstart/python#step_1_turn_on_the_api_name
+- In this `page <https://developers.google.com/gmail/api/quickstart/python#step_1_turn_on_the_api_name>`_ we can see a fast tutorial with how to get the client_secrets.json and select the gmail application.
+
 
 - Now, you have to replace the variable CLIENTSECRETS_LOCATION (after this text you can find it) value with the location of your client_secrets.json file.
 - Then, replace APPLICATION_NAME (after this text you can find it) with the name of the application we are using in gmail projects.
