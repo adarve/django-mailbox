@@ -22,5 +22,8 @@ After it we can use django-mailbox using the API Gmail  on our django project.
 
 You can install it with 'python setup.py install'.
 
+Django Mailbox Documentation
+============================
 - Documentation for django-mailbox is available on
   `ReadTheDocs <http://django-mailbox.readthedocs.org/>`_.
+
