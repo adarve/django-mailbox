@@ -278,6 +278,11 @@ After it, paste the string here and push 'enter'.
 
 
 
-def get_gmail_credentials():
-  credentials = get_stored_credentials("111833292728217023775")
+def get_gmail_credentials(user_id):
+  """
+  If we don't know that user ID, we can search in the credential folder (~/credentials/), created after we called create_credentials() 
+  function, the new file that has been created has our user ID as its file name.
+  """
+  credentials = get_stored_credentials(user_id)
+  
   return credentials
