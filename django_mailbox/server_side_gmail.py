@@ -154,6 +154,7 @@ def store_credentials(user_id, credentials):
         else: # Needed only for compatibility with Python 2.6
             credentials = tools.run(flow, store)
         print('Storing credentials to ' + credential_path)
+        print ('\n Your user_id is' + user_id )
 
 
 def exchange_code(authorization_code):
