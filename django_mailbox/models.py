@@ -382,7 +382,12 @@ class Mailbox(models.Model):
             new_mail.append(msg)
         return new_mail
         """
-        credentials = server_side_gmail.get_gmail_credentials()
+        
+        user_id = ""
+        """
+        We must enter our own user_id here in order to connect to the Gmail API with our credentials
+        """
+        credentials = server_side_gmail.get_gmail_credentials(user_id)
 
         http = credentials.authorize(server_side_gmail.httplib2.Http())
         service = server_side_gmail.discovery.build('gmail', 'v1', http=http)
