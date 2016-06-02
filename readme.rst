@@ -16,6 +16,11 @@ Tutorial - *Read before using this package*
 
 - Now, before using our modified django-mailbox, we need to execute first the function 'create_credentials()' of "django_mailbox/server_side_gmail.py" file, we follow the instructions and then, the credentials will be created.
 
+- Then, inside the function "get_new_mail(self, condition=None)" from "models.py", there is a call to
+      "server_side_gmail.get_gmail_credentials(user_id)" in which we have to insert our user_id as the parameter. 
+      
+          Note: If we don't know that user ID, we can search in the credential folder (~/credentials/), created after we called "create_credentials()" function, the new file that has been created has our user ID as its filename.
+
 - Now, all its prepared, and we can use django-mailbox using the Gmail API on our django project.
   The package can be installed with 'python setup.py install' command.
 
