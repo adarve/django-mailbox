@@ -21,7 +21,7 @@ Tutorial - Getting Gmail API credentials --- *Read before using this package*
       Command: **python create_crendentials.py**
       Now we follow the instructions and then, the credentials will be created.
 
-- Open the file "/django_mailbox/models.py", in the function "**get_new_mail(self, condition=None)", there is a call to  **"server_side_gmail.get_gmail_credentials(user_id)**" in which we have to insert **our user_id** as the parameter. 
+- Open the file "/django_mailbox/models.py", in the function "**get_new_mail(self, condition=None)", there is a call to  "server_side_gmail.get_gmail_credentials(user_id)**" in which we have to insert **our user_id** as the parameter. 
       
       Note: If we don't know that user ID, we can search in the credential folder (~/credentials/), created after we called "create_credentials()" function, the new file that has been created has our user ID as its filename.
 
