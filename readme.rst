@@ -11,6 +11,9 @@ Tutorial - Getting Gmail API credentials --- *Read before using this package*
 
 - First, download our "client_secrets.json" an select the gmail application. In this `page <https://developers.google.com/gmail/api/quickstart/python#step_1_turn_on_the_api_name>`_ there is a fast guide about how to do it.
 
+- Install the Google Client Library, with the following command:
+   $ pip install --upgrade google-api-python-client
+   
 - The next step is to download or clone this modified django-mailbox package repository. 
 
 - Open the "/django_mailbox/server_side_gmail.py" file, and replace the variable '**CLIENTSECRETS_LOCATION**' value with the location of your "client_secrets.json" file. (If the file is in the same directory as 'server_side_gmail.py' the location will be just the name of the file, if its in another path it's recommended to set the value as the full path of the json file)
