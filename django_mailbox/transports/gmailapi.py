@@ -30,8 +30,8 @@ class GmailAPITransport(EmailTransport):
         messages_list = service.users().messages().list(userId='me', q="is:unread").execute()
 
         if "messages" in messages_list:
-            try:
-                for message_gmail in messages_list["messages"]:
+            for message_gmail in messages_list["messages"]:
+                try:
                     message_api_gmail = service.users().messages().get(userId='me', id=message_gmail["id"], format='raw').execute()
 
                     msg_str = base64.urlsafe_b64decode(message_api_gmail['raw'].encode('utf-8','ignore'))
@@ -50,6 +50,6 @@ class GmailAPITransport(EmailTransport):
 
                     yield msg
 
-            except MessageParseError:
-                continue
+                except MessageParseError:
+                    continue
         return
