@@ -6,6 +6,12 @@ import server_side_gmail
 import base64
 import json
 
+from email.encoders import encode_base64
+from email.message import Message as EmailMessage
+from email.utils import formatdate, parseaddr
+import email
+
+
 class GmailAPITransport(EmailTransport):
     def __init__(self):
         self.username = None
