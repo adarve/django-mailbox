@@ -38,18 +38,18 @@ class GmailAPITransport(EmailTransport):
 
                     msg = email.message_from_string(msg_str.decode('ascii','ignore'))
 
-
-                    if condition and not condition(msg):
-                        continue
-
-                    yield msg
-
                     """
                     Main labels:
                     INBOX, SPAM, TRASH, UNREAD, STARRED, IMPORTANT, SENT, Draft
                     """
                     msg_labels = { "addLabelIds": [],"removeLabelIds": ['UNREAD', 'INBOX']}
                     service.users().messages().modify(userId='me', id=message_gmail["id"],  body=msg_labels).execute()
-                except MessageParseError:
-                    continue
+
+                    if condition and not condition(msg):
+                        continue
+
+                    yield msg
+
+            except MessageParseError:
+                continue
         return
