@@ -1,14 +1,6 @@
-from django.conf import settings
-
 from .base import EmailTransport, MessageParseError
 import server_side_gmail
-
 import base64
-import json
-
-from email.encoders import encode_base64
-from email.message import Message as EmailMessage
-from email.utils import formatdate, parseaddr
 import email
 
 
