@@ -37,15 +37,15 @@ class GmailAPITransport(EmailTransport):
 
                     msg = email.message_from_string(msg_str.decode('ascii','ignore'))
 
+                    if condition and not condition(msg):
+                        continue
+
                     """
                     Main labels:
-                    INBOX, SPAM, TRASH, UNREAD, STARRED, IMPORTANT, SENT, Draft
+                    INBOX, SPAM, TRASH, UNREAD, STARRED, IMPORTANT, SENT, DRAFT
                     """
                     msg_labels = { "addLabelIds": [],"removeLabelIds": ['UNREAD', 'INBOX']}
                     self.service.users().messages().modify(userId='me', id=message_gmail["id"],  body=msg_labels).execute()
-
-                    if condition and not condition(msg):
-                        continue
 
                     yield msg
 
