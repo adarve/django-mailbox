@@ -1,3 +1,5 @@
+  GNU nano 2.2.6                                   File: /home/ubuntu/Envs/peanutbutter/local/lib/python2.7/site-packages/django_mailbox/transports/gmailapi.py                                                                              
+
 from .base import EmailTransport, MessageParseError
 import server_side_gmail
 import base64
@@ -9,13 +11,20 @@ class GmailAPITransport(EmailTransport):
         self.username = None
         self.user_id = None
         self.watch_address = None
+        self.http = None
+        self.credentials = None
+        self.service = None
+
+    #Watch request. Set up or update a push notification watch on the given user mailbox.
+    def watch(self):
+        self.request = { 'labelIds': ['INBOX'],  'topicName': str(self.watch_address)}
+        self.service.users().watch(userId='me', body=self.request).execute()
+
 
     def connect(self, username, user_id, watch_address):
         self.username = username
         self.user_id = user_id
         self.watch_address = watch_address[1:]
-
-        self.request = { 'labelIds': ['INBOX'],  'topicName': str(self.watch_address)}
 
         try:
             self.credentials = server_side_gmail.get_gmail_credentials(user_id)
@@ -24,9 +33,10 @@ class GmailAPITransport(EmailTransport):
             return None
 
         self.http = self.credentials.authorize(server_side_gmail.httplib2.Http())
-
         self.service = server_side_gmail.discovery.build('gmail', 'v1', http=self.http)
-        self.service.users().watch(userId='me', body=self.request).execute()
+
+
+
 
 
     def get_message(self, condition=None):
@@ -56,3 +66,5 @@ class GmailAPITransport(EmailTransport):
                 except MessageParseError:
                     continue
         return
+
+
