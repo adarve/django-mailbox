@@ -19,8 +19,8 @@ class GmailAPITransport(EmailTransport):
 
         try:
             self.credentials = server_side_gmail.get_gmail_credentials(user_id)
-        except FlowExchangeError, error:
-            print ('An error occurred loading the credentials. You have to execute create_credential.py file to create it')
+        except Exception, error:
+            print ('An error occurred loading the credentials. You have to execute create_credential.py file to create it. ' + error)
             return None
 
         self.http = self.credentials.authorize(server_side_gmail.httplib2.Http())
