@@ -1,4 +1,3 @@
-import datetime
 import email.header
 import logging
 import os
@@ -131,11 +130,7 @@ def get_body_from_message(message, maintype, subtype):
 def get_attachment_save_path(instance, filename):
     settings = get_settings()
 
-    path = settings['attachment_upload_to']
-    if '%' in path:
-        path = datetime.datetime.utcnow().strftime(path)
-
     return os.path.join(
-        path,
+        settings['attachment_upload_to'],
         filename,
     )

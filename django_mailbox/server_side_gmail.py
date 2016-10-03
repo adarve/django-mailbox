@@ -15,51 +15,34 @@ from googleapiclient.errors import *
 """
 ---------  READ BEFORE USING GMAIL API ---------
 
- - First, download our "client_secrets.json" an select the gmail application. In this `page <https://developers.google.com/gmail/api/quickstart/python#step_1_turn_on_the_api_name>`_ there is a fast guide about how to do it.
+      In this page we can see a fast tutorial with how to get the client_secrets.json and
+      select the gmail application.
+      https://developers.google.com/gmail/api/quickstart/python#step_1_turn_on_the_api_name
 
-- Install the Google Client Library, with the following command:
-   $ pip install --upgrade google-api-python-client
+      Now, you have to replace the variable CLIENTSECRETS_LOCATION (after this text you can find it) value with the location of your client_secrets.json file.
+      Then, replace APPLICATION_NAME (after this text you can find it) with the name of the application we are using in gmail projects
 
-- The next step is to download or clone this modified django-mailbox package repository.
+      Now, before using our modified django-mailbox, we need to execute first the function 'create_credentials()' of this file, we follow the instructions
+      and we will have created the credentials.
 
-- Open the "/django_mailbox/server_side_gmail.py" file, and replace the variable '**CLIENTSECRETS_LOCATION**' value with the location of your "client_secrets.json" file. (If the file is in the same directory as 'server_side_gmail.py' the location will be just the name of the file, if its in another path it's recommended to set the value as the full path of the json file)
-
-- Then, replace '**APPLICATION_NAME**' value (on "/django_mailbox/server_side_gmail.py" file ) with the name of the application you are using in gmail projects (the one we selected in the first step).
-
-- Execute the python file 'create_credentials.py', located in the same directory as "django_mailbox/server_side_gmail.py".
-      Command: 
-          $ python create_crendentials.py
-      Now we follow the instructions and then, the credentials will be created.
-
-      If you are accessing the server remotely, execute the following command.
-          $ python create_credentials.py --noauth_local_webserver
-
-- Open the file "/django_mailbox/models.py", in the function "get_new_mail(self, condition=None)", there is a call to  "server_side_gmail.get_gmail_credentials(user_id)**" in which we have to insert **our user_id** as the parameter.
-
-      Note: If we don't know that user ID, we can search in the credential folder (~/credentials/), created after we called "create_credentials()" function, the new file that has been created has our user ID as its filename.
-
-- Now,  we can install django-mailbox with Gmail API extension to use it on our django project, using the right URI. 
-  Go to the root folder of this package, and install it with the next command:
-      $ python setup.py install.
-
-- The URI to use the gmail api transport, contains the user email, the user id and the watch address in case we are using the pub sub feature of google cloud platform.
-  An example of an URI with gmail api:
-     'gmailapi+ssl://<username>%40<yourdomain.com>:<user_id>@/adress/to/watch/pubsub'
-
-- Allow account access for less secure apps on Gmail:
-  https://support.google.com/accounts/answer/6010255?hl=en
-
+      After it we can use django-mailbox using the API Gmail  on our django project.
+      
+      In function get_new_mail(self, condition=None) from models.py, there is a call to
+      server_side_gmail.get_gmail_credentials(user_id) in which we have to insert our user_id as the parameter. 
+      
+          Note: If we don't know that user ID, we can search in the credential folder (~/credentials/), created after we called create_credentials() 
+            function, the new file that has been created has our user ID as its file name.
+      
 """
+
 # Path to client_secrets.json which should contain a JSON document such as:
 #   {
-#     "installed": {
+#     "web": {
 #       "client_id": "[[YOUR_CLIENT_ID]]",
 #       "client_secret": "[[YOUR_CLIENT_SECRET]]",
 #       "redirect_uris": [],
 #       "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-#       "token_uri": "https://accounts.google.com/o/oauth2/token",
-#       "project_id": "[[YOUR_PROJECT_ID]]",
-#       "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
+#       "token_uri": "https://accounts.google.com/o/oauth2/token"
 #     }
 #   }
 CLIENTSECRETS_LOCATION = 'client_secret.json'
@@ -73,8 +56,6 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly',
           'https://www.googleapis.com/auth/gmail.send',
           'https://www.googleapis.com/auth/userinfo.email',
           'https://www.googleapis.com/auth/userinfo.profile',
-          'https://www.googleapis.com/auth/pubsub',
-          'https://www.googleapis.com/auth/cloud-platform',
 ]
 APPLICATION_NAME = 'Gmail API Quickstart'
 
@@ -173,7 +154,7 @@ def store_credentials(user_id, credentials):
         else: # Needed only for compatibility with Python 2.6
             credentials = tools.run(flow, store)
         print('Storing credentials to ' + credential_path)
-        print ('\n Your user_id is: ' + user_id )
+        print ('\n Your user_id is' + user_id )
 
 
 def exchange_code(authorization_code):
@@ -307,9 +288,9 @@ After it, paste the string here and push 'enter'.
 
 def get_gmail_credentials(user_id):
   """
-  If we don't know that user ID, we can search in the credential folder (~/credentials/), created after we called create_credentials()
+  If we don't know that user ID, we can search in the credential folder (~/credentials/), created after we called create_credentials() 
   function, the new file that has been created has our user ID as its file name.
   """
   credentials = get_stored_credentials(user_id)
-
+  
   return credentials

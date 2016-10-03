@@ -16,6 +16,8 @@ import mimetypes
 import os.path
 import sys
 import uuid
+import json
+import server_side_gmail
 
 import six
 from six.moves.urllib.parse import parse_qs, unquote, urlparse
@@ -30,7 +32,7 @@ from django_mailbox import utils
 from django_mailbox.signals import message_received
 from django_mailbox.transports import Pop3Transport, ImapTransport, \
     MaildirTransport, MboxTransport, BabylTransport, MHTransport, \
-    MMDFTransport, GmailImapTransport, GmailAPITransport
+    MMDFTransport, GmailImapTransport
 
 logger = logging.getLogger(__name__)
 
@@ -209,15 +211,14 @@ class Mailbox(models.Model):
             conn = MHTransport(self.location)
         elif self.type == 'mmdf':
             conn = MMDFTransport(self.location)
-        elif self.type == 'gmailapi':
-            conn = GmailAPITransport()
-            conn.connect(self.username, self.password, self._protocol_info.path) #user email, user id, watch address
-
         return conn
 
-    def process_incoming_message(self, message):
-        """Process a message incoming to this mailbox."""
-        msg = self._process_message(message)
+    def process_incoming_message(self, message_from_api_gmail):
+        msg_str = base64.urlsafe_b64decode(message_from_api_gmail['raw'].encode('utf-8','ignore'))
+        mime_msg = email.message_from_string(msg_str.decode('utf-8','ignore'))
+
+        msg = self._process_message(mime_msg)
+
         msg.outgoing = False
         msg.save()
 
@@ -332,12 +333,11 @@ class Mailbox(models.Model):
     def _process_message(self, message):
         msg = Message()
         settings = utils.get_settings()
-	hola = 7/0
 
         if settings['store_original_message']:
             msg.eml.save(
                 '%s.eml' % uuid.uuid4(),
-                ContentFile(message.as_string()),
+                ContentFile(message.as_string(unixfrom=True)),
                 save=False
             )
         msg.mailbox = self
@@ -365,59 +365,50 @@ class Mailbox(models.Model):
                 )[0]
             except IndexError:
                 pass
-        msg.save()
-        return msg
-
-    def process_message(self, message):
-        msg = Message()
-        settings = utils.get_settings()
-
-        if settings['store_original_message']:
-            msg.eml.save(
-                '%s.eml' % uuid.uuid4(),
-                ContentFile(message.as_string()),
-                save=False
-            )
-        msg.mailbox = self
-        if 'subject' in message:
-            msg.subject = (
-                utils.convert_header_to_unicode(message['subject'])[0:255]
-            )
-        if 'message-id' in message:
-            msg.message_id = message['message-id'][0:255].strip()
-        if 'from' in message:
-            msg.from_header = utils.convert_header_to_unicode(message['from'])
-        if 'to' in message:
-            msg.to_header = utils.convert_header_to_unicode(message['to'])
-        elif 'Delivered-To' in message:
-            msg.to_header = utils.convert_header_to_unicode(
-                message['Delivered-To']
-            )
-        msg.save()
-        message = self._get_dehydrated_message(message, msg)
-        msg.set_body(message.as_string())
-        if message['in-reply-to']:
-            try:
-                msg.in_reply_to = Message.objects.filter(
-                    message_id=message['in-reply-to'].strip()
-                )[0]
-            except IndexError:
-                pass
-        with open('/home/ubuntu/msg', 'wb') as output:
-            output.write(msg.get_email_object().as_string())
-
         msg.save()
         return msg
 
     def get_new_mail(self, condition=None):
         """Connect to this transport and fetch new messages."""
         new_mail = []
+
+        """
         connection = self.get_connection()
         if not connection:
             return new_mail
+
         for message in connection.get_message(condition):
             msg = self.process_incoming_message(message)
             new_mail.append(msg)
+        return new_mail
+        """
+        
+        user_id = ""
+        """
+        We must enter our own user_id here in order to connect to the Gmail API with our credentials
+        """
+        credentials = server_side_gmail.get_gmail_credentials(user_id)
+
+        http = credentials.authorize(server_side_gmail.httplib2.Http())
+        service = server_side_gmail.discovery.build('gmail', 'v1', http=http)
+
+        #we can see the list of the messages with:
+        messages_list = service.users().messages().list(userId='me', q="is:unread").execute()
+
+        if "messages" in messages_list:
+            for message_gmail in messages_list["messages"]:
+                message_api_gmail = service.users().messages().get(userId='me', id=message_gmail["id"], format='raw').execute()
+                msg = self.process_incoming_message(message_api_gmail)
+
+                new_mail.append(msg)
+
+                """
+                Main labels:
+                INBOX, SPAM, TRASH, UNREAD, STARRED, IMPORTANT, SENT, Draft
+                """
+
+                msg_labels = { "addLabelIds": [],"removeLabelIds": ['UNREAD', 'INBOX']}
+                service.users().messages().modify(userId='me', id=message_gmail["id"],  body=msg_labels).execute()
 
         return new_mail
 
@@ -576,6 +567,7 @@ class Message(models.Model):
         pre-set it.
 
         """
+
         if not message.from_email:
             if self.mailbox.from_email:
                 message.from_email = self.mailbox.from_email
