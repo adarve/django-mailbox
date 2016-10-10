@@ -7,6 +7,7 @@ import six
 from django_mailbox.models import Mailbox, Message
 from django_mailbox.utils import convert_header_to_unicode
 from django_mailbox.tests.base import EmailMessageTestCase
+from django.utils.encoding import force_text
 from django.core.mail import EmailMessage
 
 
@@ -111,6 +112,37 @@ class TestProcessEmail(EmailMessageTestCase):
         self.assertEqual(
             attachment.get_filename(),
             u'\xc3\xb0\xcc\x9eo\xce\xb2\xcc\x9ele.png',
+        )
+
+    def test_message_with_utf8_attachment_header(self):
+        """ Ensure that we properly handle UTF-8 encoded attachment
+
+        Safe for regress of #104 too
+        """
+        email_object = self._get_email_object(
+            'message_with_utf8_attachment.eml',
+        )
+        mailbox = Mailbox.objects.create()
+        msg = mailbox.process_incoming_message(email_object)
+
+        expected_count = 2
+        actual_count = msg.attachments.count()
+
+        self.assertEqual(
+            expected_count,
+            actual_count,
+        )
+
+        attachment = msg.attachments.all()[0]
+        self.assertEqual(
+            attachment.get_filename(),
+            u'pi\u0142kochwyty.jpg'
+        )
+
+        attachment = msg.attachments.all()[1]
+        self.assertEqual(
+            attachment.get_filename(),
+            u'odpowied\u017a Burmistrza.jpg'
         )
 
     def test_message_get_text_body(self):
@@ -365,3 +397,14 @@ class TestProcessEmail(EmailMessageTestCase):
         msg = self.mailbox.process_incoming_message(email_object)
 
         self.assertEqual(msg.attachments.all().count(), 1)
+
+    def test_message_with_long_content(self):
+        email_object = self._get_email_object(
+            'message_with_long_content.eml',
+        )
+        size = len(force_text(email_object.as_string()))
+
+        msg = self.mailbox.process_incoming_message(email_object)
+
+        self.assertEqual(size,
+                         len(force_text(msg.get_email_object().as_string())))
