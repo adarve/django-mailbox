@@ -343,7 +343,6 @@ class Mailbox(models.Model):
     def _process_message(self, message):
         msg = Message()
         settings = utils.get_settings()
-	hola = 7/0
 
         if settings['store_original_message']:
             msg.eml.save(
