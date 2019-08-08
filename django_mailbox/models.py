@@ -46,12 +46,12 @@ class ActiveMailboxManager(models.Manager):
 
 class Mailbox(models.Model):
     name = models.CharField(
-        _(u'Name'),
+        _('Name'),
         max_length=255,
     )
 
     uri = models.CharField(
-        _(u'URI'),
+        _('URI'),
         max_length=255,
         help_text=(_(
             "Example: imap+ssl://myusername:mypassword@someserver <br />"
@@ -69,7 +69,7 @@ class Mailbox(models.Model):
     )
 
     from_email = models.CharField(
-        _(u'From email'),
+        _('From email'),
         max_length=255,
         help_text=(_(
             "Example: MailBot &lt;mailbot@yourdomain.com&gt;<br />"
@@ -86,7 +86,7 @@ class Mailbox(models.Model):
     )
 
     active = models.BooleanField(
-        _(u'Active'),
+        _('Active'),
         help_text=(_(
             "Check this e-mail inbox for new e-mail messages during polling "
             "cycles.  This checkbox does not have an effect upon whether "
@@ -99,7 +99,7 @@ class Mailbox(models.Model):
     )
 
     last_polling = models.DateTimeField(
-        _(u"Last polling"),
+        _("Last polling"),
         help_text=(_("The time of last successful polling for messages."
                      "It is blank for new mailboxes and is not set for "
                      "mailboxes that only receive messages via a pipe.")),
@@ -248,7 +248,7 @@ class Mailbox(models.Model):
 
         new = EmailMessage()
         if msg.is_multipart():
-            for header, value in msg.items():
+            for header, value in list(msg.items()):
                 new[header] = value
             for part in msg.get_payload():
                 new.attach(
@@ -258,7 +258,7 @@ class Mailbox(models.Model):
             settings['strip_unallowed_mimetypes']
             and not msg.get_content_type() in settings['allowed_mimetypes']
         ):
-            for header, value in msg.items():
+            for header, value in list(msg.items()):
                 new[header] = value
             # Delete header, otherwise when attempting to  deserialize the
             # payload, it will be expecting a body for this.
@@ -297,7 +297,7 @@ class Mailbox(models.Model):
                 )
             )
             attachment.message = record
-            for key, value in msg.items():
+            for key, value in list(msg.items()):
                 attachment[key] = value
             attachment.save()
 
@@ -469,16 +469,16 @@ class Message(models.Model):
     mailbox = models.ForeignKey(
         Mailbox,
         related_name='messages',
-        verbose_name=_(u'Mailbox'),
+        verbose_name=_('Mailbox'),
     )
 
     subject = models.CharField(
-        _(u'Subject'),
+        _('Subject'),
         max_length=255
     )
 
     message_id = models.CharField(
-        _(u'Message ID'),
+        _('Message ID'),
         max_length=255
     )
 
@@ -487,7 +487,7 @@ class Message(models.Model):
         related_name='replies',
         blank=True,
         null=True,
-        verbose_name=_(u'In reply to'),
+        verbose_name=_('In reply to'),
     )
 
     from_header = models.CharField(
@@ -496,21 +496,21 @@ class Message(models.Model):
     )
 
     to_header = models.TextField(
-        _(u'To header'),
+        _('To header'),
     )
 
     outgoing = models.BooleanField(
-        _(u'Outgoing'),
+        _('Outgoing'),
         default=False,
         blank=True,
     )
 
     body = models.TextField(
-        _(u'Body'),
+        _('Body'),
     )
 
     encoded = models.BooleanField(
-        _(u'Encoded'),
+        _('Encoded'),
         default=False,
         help_text=_('True if the e-mail body is Base64 encoded'),
     )
@@ -521,17 +521,17 @@ class Message(models.Model):
     )
 
     read = models.DateTimeField(
-        _(u'Read'),
+        _('Read'),
         default=None,
         blank=True,
         null=True,
     )
 
     eml = models.FileField(
-        _(u'Raw message contents'),
+        _('Raw message contents'),
         null=True,
         upload_to="messages",
-        help_text=_(u'Original full content of message')
+        help_text=_('Original full content of message')
     )
     objects = models.Manager()
     unread_messages = UnreadMessageManager()
@@ -630,18 +630,18 @@ class Message(models.Model):
         settings = utils.get_settings()
 
         if msg.is_multipart():
-            for header, value in msg.items():
+            for header, value in list(msg.items()):
                 new[header] = value
             for part in msg.get_payload():
                 new.attach(
                     self._rehydrate(part)
                 )
-        elif settings['attachment_interpolation_header'] in msg.keys():
+        elif settings['attachment_interpolation_header'] in list(msg.keys()):
             try:
                 attachment = MessageAttachment.objects.get(
                     pk=msg[settings['attachment_interpolation_header']]
                 )
-                for header, value in attachment.items():
+                for header, value in list(attachment.items()):
                     new[header] = value
                 encoding = new['Content-Transfer-Encoding']
                 if encoding and encoding.lower() == 'quoted-printable':
@@ -675,7 +675,7 @@ class Message(models.Model):
                 )
                 new.set_payload('')
         else:
-            for header, value in msg.items():
+            for header, value in list(msg.items()):
                 new[header] = value
             new.set_payload(
                 msg.get_payload()
@@ -757,13 +757,13 @@ class MessageAttachment(models.Model):
     )
 
     headers = models.TextField(
-        _(u'Headers'),
+        _('Headers'),
         null=True,
         blank=True,
     )
 
     document = models.FileField(
-        _(u'Document'),
+        _('Document'),
         upload_to=utils.get_attachment_save_path,
     )
 
@@ -780,7 +780,7 @@ class MessageAttachment(models.Model):
             try:
                 headers = headers.encode('utf-8')
             except UnicodeDecodeError:
-                headers = unicode(headers, 'utf-8').encode('utf-8')
+                headers = str(headers, 'utf-8').encode('utf-8')
         return email.message_from_string(headers)
 
     def _set_dehydrated_headers(self, email_object):
@@ -808,7 +808,7 @@ class MessageAttachment(models.Model):
             return None
 
     def items(self):
-        return self._get_rehydrated_headers().items()
+        return list(self._get_rehydrated_headers().items())
 
     def __getitem__(self, name):
         value = self._get_rehydrated_headers()[name]

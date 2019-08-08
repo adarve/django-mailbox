@@ -114,7 +114,7 @@ class EmailMessageTestCase(TestCase):
 
     def compare_email_objects(self, left, right):
         # Compare headers
-        for key, value in left.items():
+        for key, value in list(left.items()):
             if not right[key] and key in self.ALLOWED_EXTRA_HEADERS:
                 continue
             if not right[key]:
@@ -127,7 +127,7 @@ class EmailMessageTestCase(TestCase):
                         repr(right[key]),
                     )
                 )
-        for key, value in right.items():
+        for key, value in list(right.items()):
             if not left[key] and key in self.ALLOWED_EXTRA_HEADERS:
                 continue
             if not left[key]:

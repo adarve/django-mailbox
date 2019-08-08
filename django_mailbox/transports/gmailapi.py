@@ -1,5 +1,5 @@
 from .base import EmailTransport, MessageParseError
-import server_side_gmail
+from . import server_side_gmail
 import base64
 import email
 
@@ -26,8 +26,8 @@ class GmailAPITransport(EmailTransport):
 
         try:
             self.credentials = server_side_gmail.get_gmail_credentials(user_id)
-        except Exception, error:
-            print ('An error occurred loading the credentials. You have to execute create_credential.py file to create it. ' + error)
+        except Exception as error:
+            print(('An error occurred loading the credentials. You have to execute create_credential.py file to create it. ' + error))
             return None
 
         self.http = self.credentials.authorize(server_side_gmail.httplib2.Http())

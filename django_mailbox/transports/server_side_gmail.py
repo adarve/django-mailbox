@@ -172,8 +172,8 @@ def store_credentials(user_id, credentials):
             credentials = tools.run_flow(flow, store, flags)
         else: # Needed only for compatibility with Python 2.6
             credentials = tools.run(flow, store)
-        print('Storing credentials to ' + credential_path)
-        print ('\n Your user_id is: ' + user_id )
+        print(('Storing credentials to ' + credential_path))
+        print(('\n Your user_id is: ' + user_id ))
 
 
 def exchange_code(authorization_code):
@@ -193,7 +193,7 @@ def exchange_code(authorization_code):
   try:
     credentials = flow.step2_exchange(authorization_code)
     return credentials
-  except FlowExchangeError, error:
+  except FlowExchangeError as error:
     logging.error('An error occurred: %s', error)
     raise CodeExchangeException(None)
 
@@ -214,7 +214,7 @@ def get_user_info(credentials):
 
   try:
     user_info = user_info_service.userinfo().get().execute()
-  except HttpError, e:
+  except HttpError as e:
     logging.error('An error occurred: %s', e)
   if user_info and user_info.get('id'):
     return user_info
@@ -276,7 +276,7 @@ def get_credentials(authorization_code, state):
       credentials = get_stored_credentials(user_id)
       if credentials and credentials.refresh_token is not None:
         return credentials
-  except CodeExchangeException, error:
+  except CodeExchangeException as error:
     logging.error('An error occurred during code exchange.')
     # Drive apps should try to retrieve the user and credentials for the current
     # session.
@@ -294,13 +294,13 @@ def create_credentials():
   flow = flow_from_clientsecrets(CLIENTSECRETS_LOCATION, ' '.join(SCOPES))
   flow.redirect_uri = REDIRECT_URI
   authorize_url = flow.step1_get_authorize_url()
-  print """
+  print("""
 You must access to the next url, select your email account if its needed, click in 'allow', and in the next screen, go to the url of the page and copy the string after '?code=' until the hash symbol (including it into th copied string).
 After it, paste the string here and push 'enter'.
-"""
-  print authorize_url
-  print "\n"
-  authorizacion_code = raw_input("Paste here the auth code: ")
+""")
+  print(authorize_url)
+  print("\n")
+  authorizacion_code = input("Paste here the auth code: ")
   credentials = get_credentials(authorizacion_code, authorize_url)
 
 

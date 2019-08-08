@@ -1,4 +1,4 @@
-import server_side_gmail
+from . import server_side_gmail
 
 def main():
     server_side_gmail.create_credentials()

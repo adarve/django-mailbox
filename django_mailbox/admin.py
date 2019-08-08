@@ -69,7 +69,7 @@ class MessageAdmin(admin.ModelAdmin):
     def envelope_headers(self, msg):
         email = msg.get_email_object()
         return '\n'.join(
-            [('%s: %s' % (h, v)) for h, v in email.items()]
+            [('%s: %s' % (h, v)) for h, v in list(email.items())]
         )
 
     inlines = [

@@ -23,7 +23,7 @@ class GenericFileMailbox(EmailTransport):
     def get_message(self, condition=None):
         repository = self.get_instance()
         repository.lock()
-        for key, message in repository.items():
+        for key, message in list(repository.items()):
             if condition and not condition(message):
                 continue
             repository.remove(key)
